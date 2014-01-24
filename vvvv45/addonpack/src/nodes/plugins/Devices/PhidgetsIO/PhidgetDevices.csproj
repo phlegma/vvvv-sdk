@@ -43,6 +43,8 @@
     <Compile Include="Accelerometer\WrapperAccelerometer.cs" />
     <Compile Include="AdvancedServoMotor\ServoMotorNode.cs" />
     <Compile Include="AdvancedServoMotor\WrapperServoMotor.cs" />
+    <Compile Include="Bridge\BridgeNode.cs" />
+    <Compile Include="Bridge\WrapperBridge.cs" />
     <Compile Include="Encoder\EncoderNode.cs" />
     <Compile Include="Encoder\WrapperEncoder.cs" />
     <Compile Include="IOBoard\IOBoard.cs" />
