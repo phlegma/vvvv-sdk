@@ -27,6 +27,9 @@ namespace VVVV.Nodes
     public class StepperControllerNode : IPluginEvaluate
 	{
 		#region fields & pins
+
+        #pragma warning disable 0649
+
         [Input("Engaged", DefaultValue = 0)]
         IDiffSpread<bool> FEngagedIn;
 
@@ -84,6 +87,8 @@ namespace VVVV.Nodes
 
 		[Import()]
 		ILogger FLogger;
+
+        #pragma warning restore
 
         WrapperStepperController FStepper;
         bool FInit = true;

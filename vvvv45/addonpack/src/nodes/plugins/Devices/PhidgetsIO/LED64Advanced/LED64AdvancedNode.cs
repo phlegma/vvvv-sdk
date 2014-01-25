@@ -31,8 +31,9 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
+        #pragma warning disable 0649
 
-        
+
         //Input 
         [Input("Brightnes", DefaultValue = 0, MinValue = 0, MaxValue = 1)]
         IDiffSpread<double> FBrightness;
@@ -65,9 +66,11 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
+    
+        #pragma warning restore
+
         //private Fields
         WrapperLED64Advanced FLed;
-        private bool disposed;
         private bool FInit = true;
         #endregion fields & piins
 

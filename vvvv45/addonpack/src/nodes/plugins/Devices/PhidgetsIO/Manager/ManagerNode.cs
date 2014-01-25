@@ -31,6 +31,8 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
+        #pragma warning disable 0649
+
 
         //Input
         [Input("Update", IsBang=true, IsSingle=true)]
@@ -60,9 +62,11 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
+
+        #pragma warning restore
+
         //private Fields
         WrapperManager FManager = new WrapperManager();
-        private bool disposed;
         #endregion fields & piins
 
 

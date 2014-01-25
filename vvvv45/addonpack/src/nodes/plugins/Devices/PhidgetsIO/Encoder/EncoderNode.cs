@@ -29,8 +29,9 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
+        #pragma warning disable 0649
 
-        
+
         //Input 
         [Input("Position")]
         ISpread<int> FPositionIn;
@@ -61,10 +62,13 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
+    
+        #pragma warning restore
+
+
         //private Fields
         WrapperEncoder FEncoder;
         private int FEncoderCount = 0;
-        private bool disposed;
         private bool FInit = true;
         private bool FEnableFlag = true;
         #endregion fields & piins

@@ -18,7 +18,6 @@ namespace VVVV.Nodes
         public DeviceInfo FInfo;
         public List<PhidgetException> FPhidgetErrors = new List<PhidgetException>();
         private bool FAttached;
-        private bool disposed = false;
 
            
         public struct DeviceInfo

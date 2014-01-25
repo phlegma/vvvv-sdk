@@ -31,8 +31,7 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
-
-        
+        #pragma warning disable 0649
         //Input 
         [Input("Serial", DefaultValue = 0, IsSingle = true, AsInt = true, MinValue = 0, MaxValue = int.MaxValue)]
         IDiffSpread<int> FSerial;
@@ -55,9 +54,10 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
+        #pragma warning restore
+
         //private Fields
         WrapperAccelerometer FAccelerometer;
-        private bool disposed;
         #endregion fields & piins
 
 

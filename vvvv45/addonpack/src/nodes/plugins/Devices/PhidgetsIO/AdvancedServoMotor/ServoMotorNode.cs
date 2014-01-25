@@ -30,8 +30,8 @@ namespace VVVV.Nodes
     public class ServoMotorNode : IPluginEvaluate
 	{
 		#region fields & pins
-        
-        
+
+        #pragma warning disable 0649
 
         //Input 
         [Input("Engaged", DefaultValue = 0)]
@@ -97,6 +97,7 @@ namespace VVVV.Nodes
 		[Import()]
 		ILogger FLogger;
 
+        #pragma warning restore
         //priavte fields
         WrapperServoMotor FServo;
         private bool FInit = true;

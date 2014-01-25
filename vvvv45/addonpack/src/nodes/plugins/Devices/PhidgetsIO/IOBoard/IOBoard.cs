@@ -30,6 +30,9 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
+        #pragma warning disable 0649
+
+
         //Input 
         [Input("Digital", DefaultValue = 0)]
         IDiffSpread<bool> FDigitalIn;
@@ -55,9 +58,6 @@ namespace VVVV.Nodes
         [Output("Digital")]
         ISpread<bool> FDigitalOut;
 
-        [Output("Radiometric", Visibility = PinVisibility.OnlyInspector)]
-        ISpread<bool> FRadiometricOut;
-
         [Output("DataRate(ms)", Visibility = PinVisibility.OnlyInspector)]
         ISpread<int> FDataRateOut;
 
@@ -68,17 +68,13 @@ namespace VVVV.Nodes
         ISpread<int> FDataRateMaxOut;
 
 
-
-
-
         //Logger
         [Import()]
         ILogger FLogger;
 
-
+        #pragma warning restore
         //private Fields
         WrapperIOBoards FIO;
-        private bool disposed;
         private bool FInit = true;
 
         #endregion fields & pins
