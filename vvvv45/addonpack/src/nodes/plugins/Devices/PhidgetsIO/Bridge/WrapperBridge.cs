@@ -51,7 +51,7 @@ namespace VVVV.Nodes
 
         #region getter functions
 
-        public bool GetBridgeEnable(int Index, bool value)
+        public bool GetBridgeEnable(int Index)
         {
             return FPhidget.bridges[Index].Enabled;
         }
@@ -72,7 +72,7 @@ namespace VVVV.Nodes
             return FPhidget.bridges[Index].BridgeMin;
         }
 
-        public string GetDataRateMin(int Index)
+        public string GetGain(int Index)
         {
             return FPhidget.bridges[Index].Gain.ToString();
         }
