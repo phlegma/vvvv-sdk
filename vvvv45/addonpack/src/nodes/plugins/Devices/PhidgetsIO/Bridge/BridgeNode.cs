@@ -30,7 +30,7 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         //Input 
         [Input("Gain")]
         IDiffSpread<BridgeInput.Gains> FGainIn;
@@ -63,10 +63,11 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
-        #pragma warning restore
+#pragma warning restore
         //private Fields
         WrapperBridge FBridge;
         private bool FInit = true;
+        private bool FFirstFrame = true;
 
         #endregion fields & pins
 
@@ -94,15 +95,14 @@ namespace VVVV.Nodes
 
                     for (int i = 0; i < SpreadMax; i++)
                     {
-                        if (FBridge.Changed)
-                            FSensorOut[i] = FBridge.GetSensorValue(i);
 
-                        if (FGainIn.IsChanged)
+                        if (FGainIn.IsChanged || FFirstFrame)
                         {
+
                             FBridge.SetBridgeGain(i, FGainIn[i]);
                             FGainOut[i] = FBridge.GetGain(i);
-                        }
 
+                        }
                         if (FEnableIn[i])
                         {
                             if (!FBridge.GetBridgeEnable(i))
@@ -111,10 +111,13 @@ namespace VVVV.Nodes
                                 FMaxOut[i] = FBridge.GetBridgeMax(i);
                                 FMinOut[i] = FBridge.GetBridgeMin(i);
                             }
+                            FSensorOut[i] = FBridge.GetSensorValue(i);
                         }
                         else
                             FBridge.SetBridgeEnable(i, false);
                     }
+
+                    FFirstFrame = false;
                 }
                 else
                 {
@@ -122,6 +125,7 @@ namespace VVVV.Nodes
                     FGainOut.SliceCount = 0;
                     FMinOut.SliceCount = 0;
                     FMaxOut.SliceCount = 0;
+                    FFirstFrame = true;
 
                 }
 
