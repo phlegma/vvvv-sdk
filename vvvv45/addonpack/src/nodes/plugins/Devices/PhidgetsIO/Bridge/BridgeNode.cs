@@ -26,7 +26,7 @@ namespace VVVV.Nodes
                 AutoEvaluate = true
 )]
     #endregion
-    public class BridgeNode : IPluginEvaluate
+    class BridgeNode:PhidgetMainNode<Bridge>,IPluginEvaluate
     {
         #region fields & pins
 
@@ -35,13 +35,8 @@ namespace VVVV.Nodes
         [Input("Gain")]
         IDiffSpread<BridgeInput.Gains> FGainIn;
 
-        [Input("Serial", DefaultValue = 0, IsSingle = true, AsInt = true, MinValue = 0, MaxValue = int.MaxValue)]
-        IDiffSpread<int> FSerial;
-
         [Input("Enable", DefaultBoolean = true)]
         IDiffSpread<bool> FEnableIn;
-
-
 
         //Output
         [Output("Attached")]
@@ -63,58 +58,57 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
+
+
 #pragma warning restore
         //private Fields
-        WrapperBridge FBridge;
+        Bridge FBridge;
         private bool FInit = true;
         private bool FFirstFrame = true;
 
         #endregion fields & pins
 
+        public void OnImportsSatisfied()
+        {
+            //start with an empty stream output
+            
+            FBridge = FPhidget.FPhidget;
+        }
+
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
         {
+
+            base.Evaluate(SpreadMax);
+
             try
             {
-                if (FSerial.IsChanged)
-                {
-                    if (FBridge != null)
-                    {
-                        FBridge.Close();
-                        FBridge = null;
-                    }
-                    FBridge = new WrapperBridge(FSerial[0]);
-                    FInit = false;
-                }
-
                 if (FBridge.Attached && FInit == false)
                 {
 
-                    SpreadMax = FBridge.Count;
-                    FGainOut.SliceCount = FSensorOut.SliceCount = FMinOut.SliceCount = FMaxOut.SliceCount = FBridge.Count;
+                    SpreadMax = FBridge.bridges.Count;
+                    FGainOut.SliceCount = FSensorOut.SliceCount = FMinOut.SliceCount = FMaxOut.SliceCount = SpreadMax;
 
                     for (int i = 0; i < SpreadMax; i++)
                     {
 
                         if (FGainIn.IsChanged || FFirstFrame)
                         {
-
-                            FBridge.SetBridgeGain(i, FGainIn[i]);
-                            FGainOut[i] = FBridge.GetGain(i);
-
+                            FBridge.bridges[i].Gain = FGainIn[i];
+                            FGainOut[i] = FBridge.bridges[i].Gain.ToString();
                         }
                         if (FEnableIn[i])
                         {
-                            if (!FBridge.GetBridgeEnable(i))
+                            if (!FBridge.bridges[i].Enabled)
                             {
-                                FBridge.SetBridgeEnable(i, true);
-                                FMaxOut[i] = FBridge.GetBridgeMax(i);
-                                FMinOut[i] = FBridge.GetBridgeMin(i);
+                                FBridge.bridges[i].Enabled = true;
+                                FMaxOut[i] = FBridge.bridges[i].BridgeMax;
+                                FMinOut[i] = FBridge.bridges[i].BridgeMin;
                             }
-                            FSensorOut[i] = FBridge.GetSensorValue(i);
+                            FSensorOut[i] = FBridge.bridges[i].BridgeValue;
                         }
                         else
-                            FBridge.SetBridgeEnable(i, false);
+                            FBridge.bridges[i].Enabled = false;
                     }
 
                     FFirstFrame = false;
@@ -126,17 +120,9 @@ namespace VVVV.Nodes
                     FMinOut.SliceCount = 0;
                     FMaxOut.SliceCount = 0;
                     FFirstFrame = true;
-
                 }
 
                 FAttached[0] = FBridge.Attached;
-
-                List<PhidgetException> Exceptions = FBridge.Errors;
-                if (Exceptions != null)
-                {
-                    foreach (Exception e in Exceptions)
-                        FLogger.Log(e);
-                }
             }
             catch (PhidgetException ex)
             {

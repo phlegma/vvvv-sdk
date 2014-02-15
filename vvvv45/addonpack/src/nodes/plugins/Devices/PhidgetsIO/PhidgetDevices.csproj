@@ -45,6 +45,7 @@
     <Compile Include="AdvancedServoMotor\WrapperServoMotor.cs" />
     <Compile Include="Bridge\BridgeNode.cs" />
     <Compile Include="Bridge\WrapperBridge.cs" />
+    <Compile Include="PhidgetsMain.cs" />
     <Compile Include="Encoder\EncoderNode.cs" />
     <Compile Include="Encoder\WrapperEncoder.cs" />
     <Compile Include="IOBoard\IOBoard.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Manager\ManagerNode.cs" />
     <Compile Include="Manager\WrapperManager.cs" />
     <Compile Include="PhidgetBase.cs" />
+    <Compile Include="PhidgetMainNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StepperController\StepperControllerNode.cs" />
     <Compile Include="StepperController\WrapperStepperController.cs" />

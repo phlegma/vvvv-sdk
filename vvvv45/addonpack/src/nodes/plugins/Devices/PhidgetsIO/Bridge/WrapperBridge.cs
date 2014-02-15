@@ -8,7 +8,7 @@ using Phidgets.Events;
 
 namespace VVVV.Nodes
 {
-    class WrapperBridge: Phidgets<Bridge>, IPhidgetsWrapper
+    class WrapperBridge: PhidgetsMain<Bridge>, IPhidgetsWrapper
     {
 
         bool FChanged = false;
@@ -56,7 +56,6 @@ namespace VVVV.Nodes
             return FPhidget.bridges[Index].Enabled;
         }
 
-
         public double GetSensorValue(int Index)
         {
             return FPhidget.bridges[Index].BridgeValue;
@@ -83,7 +82,7 @@ namespace VVVV.Nodes
 
 
 
-        public override void AddChangedHandler()
+        public void AddChangedHandler()
         {
             FPhidget.BridgeData += new BridgeDataEventHandler(SensorChange);
         }
@@ -94,7 +93,7 @@ namespace VVVV.Nodes
 			FSensorChanged = true;
         }
 
-        public override void RemoveChangedHandler()
+        public void RemoveChangedHandler()
         {
             FPhidget.BridgeData -= new BridgeDataEventHandler(SensorChange);
         }
