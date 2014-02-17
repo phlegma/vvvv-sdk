@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Collections.Generic;
- using System.Threading;
+using System.Threading;
 
 using VVVV.PluginInterfaces.V2;
 using VVVV.Utils.VColor;
@@ -26,11 +26,11 @@ namespace VVVV.Nodes
                 AutoEvaluate = true
 )]
     #endregion
-    public class InterfaceBoard : IPluginEvaluate
+    public class InterfaceBoard : PhidgetMainNode<InterfaceKit>, IPluginEvaluate
     {
         #region fields & pins
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
 
 
         //Input 
@@ -40,13 +40,11 @@ namespace VVVV.Nodes
         [Input("Radiometric", IsSingle = true)]
         IDiffSpread<bool> FRadiometricIn;
 
+        [Input("Sensitivity", DefaultValue = 10, MinValue = 0, MaxValue = 1000)]
+        IDiffSpread<int> FSensitivity;
+
         [Input("DataRate (ms)", DefaultValue = 16, Visibility = PinVisibility.OnlyInspector)]
         IDiffSpread<int> FDataRateIn;
-
-        [Input("Serial", DefaultValue = 0, IsSingle = true, AsInt = true, MinValue = 0, MaxValue = int.MaxValue)]
-        IDiffSpread<int> FSerial;
-
-
 
         //Output
         [Output("Attached")]
@@ -72,10 +70,9 @@ namespace VVVV.Nodes
         [Import()]
         ILogger FLogger;
 
-        #pragma warning restore
+#pragma warning restore
         //private Fields
-        WrapperIOBoards FIO;
-        private bool FInit = true;
+        private bool FFirstTime = true;
 
         #endregion fields & pins
 
@@ -84,101 +81,80 @@ namespace VVVV.Nodes
         {
             try
             {
-                if (FSerial.IsChanged)
+                base.Evaluate(SpreadMax);
+
+                if (FPhidgetMain.Attached)
                 {
-                    if (FIO != null)
+                    int SensorCount = FPhidgetMain.FPhidget.sensors.Count;
+                    int InputCount = FPhidgetMain.FPhidget.inputs.Count;
+                    int OutputCount = FPhidgetMain.FPhidget.outputs.Count;
+
+                    if (!(FPhidgetMain.FPhidget.ID == Phidget.PhidgetID.LINEAR_TOUCH || FPhidgetMain.FPhidget.ID == Phidget.PhidgetID.ROTARY_TOUCH))
                     {
-						FIO.Close();
-                        FIO = null;
+                        if (FRadiometricIn.IsChanged || FFirstTime)
+                            FPhidgetMain.FPhidget.ratiometric = FRadiometricIn[0];
                     }
-                    FIO = new WrapperIOBoards(FSerial[0]);
-					FInit = false;
-                }
 
-				if (FIO.Attached && FInit == false)
-                {
-
-					if (!(FIO.FPhidget.ID .ToString()== Phidget.PhidgetID.LINEAR_TOUCH.ToString() || FIO.FPhidget.ID.ToString() == Phidget.PhidgetID.ROTARY_TOUCH.ToString()))
-					{
-						if (FRadiometricIn.IsChanged || FInit)
-							FIO.SetRadiometric(FRadiometricIn[0]);
-
-						if (FDataRateIn.IsChanged || FInit)
-						{
-							for (int i = 0; i < FIO.GetSensorCount(); i++)
-								FIO.SetDataRate(i, FDataRateIn[i]);
-						}
-					}
-
-					if (FIO.DigitalInputChanged)
+                    if (FDataRateIn.IsChanged || FSensitivity.IsChanged || FFirstTime)
                     {
-						FDigitalOut.SliceCount = FIO.GetInputCount();
-						
-						for (int i = 0; i < FIO.GetInputCount(); i++)
-							FDigitalOut[i] = FIO.GetInputState(i);
-					}
-					
-					if(FIO.SensorChanged)
-					{
-						FSensorOut.SliceCount  = FIO.GetSensorCount();
-						
-						for (int i = 0; i < FIO.GetSensorCount(); i++)
-						{
-							if (!(FIO.FPhidget.ID.ToString() == Phidget.PhidgetID.LINEAR_TOUCH.ToString() || FIO.FPhidget.ID.ToString() == Phidget.PhidgetID.ROTARY_TOUCH.ToString()))
+                        for (int i = 0; i < SensorCount; i++)
                         {
-								FDataRateMaxOut.SliceCount = FIO.GetSensorCount();
-								FDataRateMinOut.SliceCount = FIO.GetSensorCount();
-								FDataRateOut.SliceCount = FIO.GetSensorCount();
-								
-								FSensorOut[i] = Convert.ToDouble(FIO.GetSensorRawValue(i)) / 4095;
-								FDataRateOut[i] = FIO.GetDataRate(i);
-								FDataRateMinOut[i] = FIO.GetDataRateMin(i);
-								FDataRateMaxOut[i] = FIO.GetDataRateMax(i);
-							}
-							else
-							{
-								FSensorOut[i] = Convert.ToDouble(FIO.GetSensorValue(i)) / 1000;
-								//FDataRateOut[i] = FIO.GetDataRate(i);
-								//FDataRateMinOut[i] = FIO.GetDataRateMin(i);
-								//FDataRateMaxOut[i] = FIO.GetDataRateMax(i);
+                            FPhidgetMain.FPhidget.sensors[i].DataRate = FDataRateIn[i];
+                            FPhidgetMain.FPhidget.sensors[i].Sensitivity = FSensitivity[i];
                         }
-
                     }
-					}
+
+                    if (FDigitalIn.IsChanged || FFirstTime)
+                    {
+                        for (int i = 0; i < OutputCount; i++)
+                            FPhidgetMain.FPhidget.outputs[i] = FDigitalIn[i];
+                    }
 
 
+                    FDigitalOut.SliceCount = InputCount;
+                    for (int i = 0; i < InputCount; i++)
+                    {
+                        FDigitalOut[i] = FPhidgetMain.FPhidget.inputs[i];
+                    }
 
-					if (FDigitalIn.IsChanged)
-					{
-						for (int i = 0; i < SpreadMax; i++)
-						{
-							if (i < FIO.Count)
-							{
-								if (FDigitalIn.IsChanged)
-									FIO.SetDigitalOutput(i, FDigitalIn[i]);
-							}
-						}
-					}
-					
-				}else
-				{
-					FSensorOut.SliceCount = 0;
-					FDigitalOut.SliceCount = 0;
+                    FSensorOut.SliceCount = FDataRateMaxOut.SliceCount = FDataRateMinOut.SliceCount = SensorCount;
+                    for (int i = 0; i < SensorCount; i++)
+                    {
+
+                        if (!(FPhidgetMain.FPhidget.ID == Phidget.PhidgetID.LINEAR_TOUCH || FPhidgetMain.FPhidget.ID == Phidget.PhidgetID.ROTARY_TOUCH))
+                        {
+                            FSensorOut[i] = Convert.ToDouble(FPhidgetMain.FPhidget.sensors[i].RawValue) / 4095;
+                            FDataRateMinOut[i] = FPhidgetMain.FPhidget.sensors[i].DataRateMin;
+                            FDataRateMaxOut[i] = FPhidgetMain.FPhidget.sensors[i].DataRateMax;
+                        }
+                        else
+                        {
+                            FSensorOut[i] = Convert.ToDouble(FPhidgetMain.FPhidget.sensors[i].Value) / 1000;
+                        }
+                    }
+
+                    FFirstTime = false;
+                }
+                else
+                {
+                    FSensorOut.SliceCount = 0;
+                    FDigitalOut.SliceCount = 0;
+                    FFirstTime = true;
                 }
 
-				FAttached[0] = FIO.Attached;
-				
-				List<PhidgetException> Exceptions = FIO.Errors;
-				if (Exceptions != null)
-				{
-					foreach (Exception e in Exceptions)
-						FLogger.Log(e);
-				}
-			}
-			catch (PhidgetException ex)
-			{
-				FLogger.Log(ex);
-			}
-		}
-	}
+                FAttached[0] = FPhidgetMain.Attached;
+
+                List<PhidgetException> Exceptions = FPhidgetMain.Errors;
+                if (Exceptions != null)
+                {
+                    foreach (Exception e in Exceptions)
+                        FLogger.Log(e);
+                }
+            }
+            catch (PhidgetException ex)
+            {
+                FLogger.Log(ex);
+            }
+        }
+    }
 }

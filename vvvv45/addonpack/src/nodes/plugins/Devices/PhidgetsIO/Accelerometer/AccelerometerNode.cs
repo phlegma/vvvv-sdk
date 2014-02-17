@@ -27,68 +27,72 @@ namespace VVVV.Nodes
 )]
     #endregion PluginInfo
 
-    public class AccelerometerNode : IPluginEvaluate
+    public class AccelerometerNode : PhidgetMainNode<Accelerometer>, IPluginEvaluate
     {
         #region fields & pins
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         //Input 
-        [Input("Serial", DefaultValue = 0, IsSingle = true, AsInt = true, MinValue = 0, MaxValue = int.MaxValue)]
-        IDiffSpread<int> FSerial;
+        [Input("Sensitivy", DefaultValue = 0, MinValue = 0, MaxValue = 1)]
+        IDiffSpread<double> FSensitivy;
 
         //Output
         [Output("Attached")]
         ISpread<bool> FAttached;
 
         [Output("Acceleration")]
-        ISpread<Vector2D> FAcceleration;
+        ISpread<double> FAcceleration;
 
         [Output("Acceleration Minimum")]
-        ISpread<Vector2D> FAccelerationMin;
+        ISpread<double> FAccelerationMin;
 
         [Output("Acceleration Maximum")]
-        ISpread<Vector2D> FAccelerationMax;
+        ISpread<double> FAccelerationMax;
 
 
         //Logger
         [Import()]
         ILogger FLogger;
 
-        #pragma warning restore
+#pragma warning restore
 
         //private Fields
-        WrapperAccelerometer FAccelerometer;
         #endregion fields & piins
 
 
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
         {
+
+            base.Evaluate(SpreadMax);
             try
             {
-                if (FSerial.IsChanged)
+                if (FPhidgetMain.Attached && FInit == false)
                 {
-                    if (FAccelerometer != null)
+                    int SliceCount = FPhidgetMain.FPhidget.axes.Count;
+                    FAcceleration.SliceCount = SliceCount;
+                    FAccelerationMax.SliceCount = SliceCount;
+                    FAccelerationMin.SliceCount = SliceCount;
+                    for (int i = 0; i < SliceCount; i++)
                     {
-                    	FAccelerometer.Close();
-                        FAccelerometer = null;
+                        FAcceleration[i] = FPhidgetMain.FPhidget.axes[i].Acceleration;
+                        FAccelerationMin[i] = FPhidgetMain.FPhidget.axes[i].AccelerationMin;
+                        FAccelerationMax[i] = FPhidgetMain.FPhidget.axes[i].AccelerationMax;
                     }
-                    FAccelerometer = new WrapperAccelerometer(FSerial[0]);
+
+                    if (FSensitivy.IsChanged)
+                    {
+                        for (int i = 0; i < SliceCount; i++)
+                        {
+                            FPhidgetMain.FPhidget.axes[i].Sensitivity = FSensitivy[i];
+                        }
+                    }
+
                 }
 
-                if (FAccelerometer.Attached)
-                {
-                    if (FAccelerometer.Changed)
-                    {
-                        FAcceleration[0] = new Vector2D(FAccelerometer.GetAccelerationCollection()[0].Acceleration, FAccelerometer.GetAccelerationCollection()[1].Acceleration);
-                        FAccelerationMin[0] = new Vector2D(FAccelerometer.GetAccelerationCollection()[0].AccelerationMin, FAccelerometer.GetAccelerationCollection()[1].AccelerationMin);
-                        FAccelerationMax[0] = new Vector2D(FAccelerometer.GetAccelerationCollection()[0].AccelerationMax, FAccelerometer.GetAccelerationCollection()[1].AccelerationMax);
-                    }
-                }
+                FAttached[0] = FPhidgetMain.FPhidget.Attached;
 
-                FAttached[0] = FAccelerometer.Attached;
-
-                List<PhidgetException> Exceptions = FAccelerometer.Errors;
+                List<PhidgetException> Exceptions = FPhidgetMain.Errors;
                 if (Exceptions != null)
                 {
                     foreach (Exception e in Exceptions)

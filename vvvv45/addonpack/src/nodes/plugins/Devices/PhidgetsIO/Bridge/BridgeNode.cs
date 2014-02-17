@@ -26,8 +26,8 @@ namespace VVVV.Nodes
                 AutoEvaluate = true
 )]
     #endregion
-    class BridgeNode:PhidgetMainNode<Bridge>,IPluginEvaluate
-    {
+    public class BridgeNode:PhidgetMainNode<Bridge>,IPluginEvaluate
+    { 
         #region fields & pins
 
 #pragma warning disable 0649
@@ -60,20 +60,13 @@ namespace VVVV.Nodes
 
 
 
-#pragma warning restore
+        #pragma warning restore
         //private Fields
-        Bridge FBridge;
         private bool FInit = true;
         private bool FFirstFrame = true;
 
         #endregion fields & pins
-
-        public void OnImportsSatisfied()
-        {
-            //start with an empty stream output
-            
-            FBridge = FPhidget.FPhidget;
-        }
+        
 
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
@@ -83,10 +76,10 @@ namespace VVVV.Nodes
 
             try
             {
-                if (FBridge.Attached && FInit == false)
+                if (FPhidgetMain.Attached && FInit == false)
                 {
 
-                    SpreadMax = FBridge.bridges.Count;
+                    SpreadMax = FPhidgetMain.FPhidget.bridges.Count;
                     FGainOut.SliceCount = FSensorOut.SliceCount = FMinOut.SliceCount = FMaxOut.SliceCount = SpreadMax;
 
                     for (int i = 0; i < SpreadMax; i++)
@@ -94,21 +87,21 @@ namespace VVVV.Nodes
 
                         if (FGainIn.IsChanged || FFirstFrame)
                         {
-                            FBridge.bridges[i].Gain = FGainIn[i];
-                            FGainOut[i] = FBridge.bridges[i].Gain.ToString();
+                            FPhidgetMain.FPhidget.bridges[i].Gain = FGainIn[i];
+                            FGainOut[i] = FPhidgetMain.FPhidget.bridges[i].Gain.ToString();
                         }
                         if (FEnableIn[i])
                         {
-                            if (!FBridge.bridges[i].Enabled)
+                            if (!FPhidgetMain.FPhidget.bridges[i].Enabled)
                             {
-                                FBridge.bridges[i].Enabled = true;
-                                FMaxOut[i] = FBridge.bridges[i].BridgeMax;
-                                FMinOut[i] = FBridge.bridges[i].BridgeMin;
+                                FPhidgetMain.FPhidget.bridges[i].Enabled = true;
+                                FMaxOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMax;
+                                FMinOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMin;
                             }
-                            FSensorOut[i] = FBridge.bridges[i].BridgeValue;
+                            FSensorOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeValue;
                         }
                         else
-                            FBridge.bridges[i].Enabled = false;
+                            FPhidgetMain.FPhidget.bridges[i].Enabled = false;
                     }
 
                     FFirstFrame = false;
@@ -122,7 +115,7 @@ namespace VVVV.Nodes
                     FFirstFrame = true;
                 }
 
-                FAttached[0] = FBridge.Attached;
+                FAttached[0] = FPhidgetMain.FPhidget.Attached;
             }
             catch (PhidgetException ex)
             {

@@ -17,8 +17,9 @@ namespace VVVV.Nodes
         public T FPhidget;
         public DeviceInfo FInfo;
         public List<PhidgetException> FPhidgetErrors = new List<PhidgetException>();
+        private bool FAttached = false;
+        private bool FConnected = false;
 
-           
         public struct DeviceInfo
         {
             public string Name;
@@ -32,7 +33,12 @@ namespace VVVV.Nodes
 
         public bool Attached
         {
-            get { return FPhidget.Attached || FPhidget.AttachedToServer; }
+            get { return FAttached; }
+        }
+
+        public bool Connected
+        {
+            get { return FConnected; }
         }
 
         public List<PhidgetException> Errors
@@ -52,18 +58,10 @@ namespace VVVV.Nodes
 
         #region constructor + Close
 
-        public void Open()
-        {
-            FPhidget = new T();
-            AddEventHandler();
-            FPhidget.open();
-        }
-
         public PhidgetsMain()
         {
             FPhidget = new T();
             AddEventHandler();
-            FPhidget.open();
         }
 
         public PhidgetsMain(int SerialNumber)
@@ -79,16 +77,15 @@ namespace VVVV.Nodes
                 else
                 {
                     FPhidget.open();
-                }               
+                }
             }
             catch (PhidgetException ex)
             {
                 FPhidgetErrors.Add(ex);
-                FPhidget.open();
             }
         }
 
-        public PhidgetsMain(int SerialNumber,string IP, int Port, string Password)
+        public PhidgetsMain(int SerialNumber, string IP, int Port, string Password)
         {
             FPhidget = new T();
             AddEventHandler();
@@ -96,24 +93,38 @@ namespace VVVV.Nodes
             {
                 if (SerialNumber > 0)
                 {
-                    FPhidget.open(SerialNumber, IP, Port, Password);
+                    if (!String.IsNullOrEmpty(Password))
+                    {
+                        FPhidget.open(SerialNumber, IP, Port, Password);
+                    }
+                    else
+                    {
+                        FPhidget.open(SerialNumber, IP, Port);
+                    }
                 }
                 else
                 {
-                    FPhidget.open(IP, Port, Password); ;
+                    if (!String.IsNullOrEmpty(Password))
+                    {
+                        FPhidget.open(IP, Port, Password); 
+                    }
+                    else
+                    {
+                        FPhidget.open(IP, Port); 
+                    }
                 }
             }
             catch (PhidgetException ex)
             {
                 FPhidgetErrors.Add(ex);
-                FPhidget.open();
             }
         }
-        
+
         public void Close()
         {
             RemoveEventHandler();
-        	FPhidget.close();
+            FPhidget.close();
+            Thread.Sleep(30);
         }
 
         #endregion constructor + Close
@@ -136,7 +147,7 @@ namespace VVVV.Nodes
             FPhidget.Detach -= new DetachEventHandler(DetachHandler);
             FPhidget.Error -= new ErrorEventHandler(ErrorHandler);
             FPhidget.ServerConnect -= new ServerConnectEventHandler(ServerConnect);
-            FPhidget.ServerDisconnect -= new ServerDisconnectEventHandler(ServerDisconnect); 
+            FPhidget.ServerDisconnect -= new ServerDisconnectEventHandler(ServerDisconnect);
         }
 
         void AttachHandler(object sender, AttachEventArgs e)
@@ -149,30 +160,25 @@ namespace VVVV.Nodes
                 FInfo.SerialNumber = attached.SerialNumber;
                 FInfo.Version = attached.Version;
                 FInfo.PhidgetId = attached.ID;
-            }  
+            }
+
+            FAttached = true;
         }
 
         void DetachHandler(object sender, DetachEventArgs e)
         {
             T attached = (T)sender;
+            FAttached = false;
         }
 
         void ServerConnect(object sender, ServerConnectEventArgs e)
         {
-            T attached = (T)sender;
-            if (attached.AttachedToServer)
-            {
-                FInfo = new DeviceInfo();
-                FInfo.Name = attached.Name;
-                FInfo.SerialNumber = attached.SerialNumber;
-                FInfo.Version = attached.Version;
-                FInfo.PhidgetId = attached.ID;
-            }  
+            FConnected = true;
         }
 
         void ServerDisconnect(object sender, ServerDisconnectEventArgs e)
         {
-            throw new NotImplementedException();
+            FConnected = false;
         }
 
 
@@ -181,7 +187,7 @@ namespace VVVV.Nodes
         {
             FPhidgetErrors.Add(e.exception);
         }
-        
+
         #endregion Attach Detach Event Handler
 
     }

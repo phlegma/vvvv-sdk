@@ -31,12 +31,24 @@ namespace VVVV.Nodes
     {
         #region fields & pins
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
 
 
         //Input
-        [Input("Update", IsBang=true, IsSingle=true)]
+        [Input("Update", IsBang = true, IsSingle = true)]
         IDiffSpread<bool> FUpdate;
+
+        [Input("Connect Webservice", DefaultValue = 0, IsSingle = true)]
+        IDiffSpread<bool> FEnableWebservice;
+
+        [Input("IP", DefaultString = "127.0.0.1", IsSingle = true)]
+        IDiffSpread<string> FIP;
+
+        [Input("Port", DefaultValue = 5001, IsSingle = true, AsInt = true, MinValue = 0, MaxValue = 65535)]
+        IDiffSpread<int> FPort;
+
+        [Input("Password", IsSingle = true)]
+        IDiffSpread<string> FPassword;
 
         //Output
         [Output("Device Name")]
@@ -63,10 +75,11 @@ namespace VVVV.Nodes
         ILogger FLogger;
 
 
-        #pragma warning restore
+#pragma warning restore
 
         //private Fields
         WrapperManager FManager = new WrapperManager();
+        bool FirstFrame = true;
         #endregion fields & piins
 
 
@@ -75,6 +88,16 @@ namespace VVVV.Nodes
         {
             try
             {
+                if (FEnableWebservice.IsChanged)
+                {
+                    FManager.Close();
+                    FManager = null;
+                    if (FEnableWebservice[0])
+                        FManager = new WrapperManager(FIP[0], FPort[0], FPassword[0]);
+                    else
+                        FManager = new WrapperManager();
+                }
+
                 if (FUpdate.IsChanged)
                 {
                     FName.SliceCount = FManager.FPhidget.Devices.Count;
