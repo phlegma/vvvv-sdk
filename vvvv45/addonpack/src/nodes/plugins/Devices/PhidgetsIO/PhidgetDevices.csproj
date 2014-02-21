@@ -39,10 +39,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Accelerometer\AccelerometerNode.cs" />
+    <Compile Include="Motion\AccelerometerNode.cs" />
     <Compile Include="AdvancedServoMotor\ServoMotorNode.cs" />
     <Compile Include="AdvancedServoMotor\WrapperServoMotor.cs" />
     <Compile Include="Bridge\BridgeNode.cs" />
+    <Compile Include="Motion\SpatialNode.cs" />
     <Compile Include="PhidgetsMain.cs" />
     <Compile Include="Encoder\EncoderNode.cs" />
     <Compile Include="Encoder\WrapperEncoder.cs" />

@@ -27,16 +27,21 @@ namespace VVVV.Nodes
         [Input("Password", IsSingle = true)]
         IDiffSpread<string> FPassword;
 
+        [Input("Enable", IsSingle = true, DefaultBoolean = true)]
+        IDiffSpread<bool> FEnableIn;
+
         [Output("Connected")]
         ISpread<bool> FConnected;
         #pragma warning restore
 
         public PhidgetsMain<T> FPhidgetMain;
         public bool FInit = true;
-
+        public bool FEnable = true;
 
         public void Evaluate(int SpreadMax)
         {
+            FEnable = FEnableIn[0];
+
             if (FSerial.IsChanged || FEnableWebservice.IsChanged)
             {
                 if (FPhidgetMain != null)

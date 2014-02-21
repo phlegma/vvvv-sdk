@@ -35,8 +35,8 @@ namespace VVVV.Nodes
         [Input("Gain")]
         IDiffSpread<BridgeInput.Gains> FGainIn;
 
-        [Input("Enable", DefaultBoolean = true)]
-        IDiffSpread<bool> FEnableIn;
+        [Input("Activate", DefaultBoolean = true)]
+        IDiffSpread<bool> FActivateIn;
 
         //Output
         [Output("Attached")]
@@ -76,7 +76,7 @@ namespace VVVV.Nodes
 
             try
             {
-                if (FPhidgetMain.Attached && FInit == false)
+                if (FPhidgetMain.Attached && FInit == false && FEnable)
                 {
 
                     SpreadMax = FPhidgetMain.FPhidget.bridges.Count;
@@ -90,7 +90,7 @@ namespace VVVV.Nodes
                             FPhidgetMain.FPhidget.bridges[i].Gain = FGainIn[i];
                             FGainOut[i] = FPhidgetMain.FPhidget.bridges[i].Gain.ToString();
                         }
-                        if (FEnableIn[i])
+                        if (FActivateIn[i])
                         {
                             if (!FPhidgetMain.FPhidget.bridges[i].Enabled)
                             {

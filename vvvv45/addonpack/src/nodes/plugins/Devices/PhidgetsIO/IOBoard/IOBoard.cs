@@ -40,7 +40,7 @@ namespace VVVV.Nodes
         [Input("Radiometric", IsSingle = true)]
         IDiffSpread<bool> FRadiometricIn;
 
-        [Input("Sensitivity", DefaultValue = 10, MinValue = 0, MaxValue = 1000)]
+        [Input("Sensitivity",AsInt=true, DefaultValue = 0, MinValue = 0, MaxValue = 1000)]
         IDiffSpread<int> FSensitivity;
 
         [Input("DataRate (ms)", DefaultValue = 16, Visibility = PinVisibility.OnlyInspector)]
@@ -55,9 +55,6 @@ namespace VVVV.Nodes
 
         [Output("Digital")]
         ISpread<bool> FDigitalOut;
-
-        [Output("DataRate(ms)", Visibility = PinVisibility.OnlyInspector)]
-        ISpread<int> FDataRateOut;
 
         [Output("DataRateMin(ms)", Visibility = PinVisibility.OnlyInspector)]
         ISpread<int> FDataRateMinOut;

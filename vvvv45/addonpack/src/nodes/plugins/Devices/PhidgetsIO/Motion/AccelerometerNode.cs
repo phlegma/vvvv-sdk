@@ -67,7 +67,7 @@ namespace VVVV.Nodes
             base.Evaluate(SpreadMax);
             try
             {
-                if (FPhidgetMain.Attached && FInit == false)
+                if (FPhidgetMain.Attached && FInit == false && FEnable)
                 {
                     int SliceCount = FPhidgetMain.FPhidget.axes.Count;
                     FAcceleration.SliceCount = SliceCount;
