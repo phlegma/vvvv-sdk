@@ -42,7 +42,7 @@ namespace VVVV.Nodes
         {
             FEnable = FEnableIn[0];
 
-            if (FSerial.IsChanged || FEnableWebservice.IsChanged)
+            if (FSerial.IsChanged || FEnableWebservice.IsChanged || FEnableIn.IsChanged)
             {
                 if (FPhidgetMain != null)
                 {

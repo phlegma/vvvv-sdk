@@ -62,7 +62,6 @@ namespace VVVV.Nodes
 
         #pragma warning restore
         //private Fields
-        private bool FInit = true;
         private bool FFirstFrame = true;
 
         #endregion fields & pins
