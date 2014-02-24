@@ -94,13 +94,15 @@ namespace VVVV.Nodes
                             if (!FPhidgetMain.FPhidget.bridges[i].Enabled)
                             {
                                 FPhidgetMain.FPhidget.bridges[i].Enabled = true;
-                                FMaxOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMax;
-                                FMinOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMin;
+                                //FMaxOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMax;
+                                //FMinOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeMin;
                             }
                             FSensorOut[i] = FPhidgetMain.FPhidget.bridges[i].BridgeValue;
                         }
                         else
-                            FPhidgetMain.FPhidget.bridges[i].Enabled = false;
+                        {
+                            //FPhidgetMain.FPhidget.bridges[i].Enabled = false;
+                        }
                     }
 
                     FFirstFrame = false;
