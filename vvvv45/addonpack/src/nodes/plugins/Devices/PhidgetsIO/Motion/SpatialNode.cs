@@ -106,14 +106,14 @@ namespace VVVV.Nodes
                     }
 
                     FGyros.SliceCount = FGyrosMax.SliceCount = FGyrosMin.SliceCount = SliceCountCompass;
-                    for (int i = 0; i < SliceCountGyro; i++)
+                    for (int i = 0; i < SliceCountCompass; i++)
                     {
                         FAcceleration[i] = FPhidgetMain.FPhidget.compassAxes[i].MagneticField;
                         FAccelerationMin[i] = FPhidgetMain.FPhidget.compassAxes[i].MagneticFieldMin;
                         FAccelerationMax[i] = FPhidgetMain.FPhidget.compassAxes[i].MagneticFieldMax;
                     }
 
-                    for (int i = 0; i < SliceCountAcceleration; i++)
+                    for (int i = 0; i < SliceCountGyro; i++)
                     {
                         FAcceleration[i] = FPhidgetMain.FPhidget.gyroAxes[i].AngularRate;
                         FAccelerationMin[i] = FPhidgetMain.FPhidget.gyroAxes[i].AngularRateMin;
