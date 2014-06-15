@@ -9,7 +9,8 @@
     <AssemblyName>VVVV.Nodes.Devices.Leap</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LeapCSharp.NET4.0">
+    <Reference Include="LeapCSharp.NET4.0, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6e1b1368e71eba9b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\common\src\thirdparty\LeapCSharp.NET4.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
