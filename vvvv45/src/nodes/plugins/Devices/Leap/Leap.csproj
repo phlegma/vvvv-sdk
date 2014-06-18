@@ -22,6 +22,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoneNode.cs" />
+    <Compile Include="FingerNode.cs" />
+    <Compile Include="GestureNode.cs" />
+    <Compile Include="HandNode.cs" />
     <Compile Include="LeapNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
