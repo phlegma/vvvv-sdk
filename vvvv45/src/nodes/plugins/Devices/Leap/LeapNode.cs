@@ -74,10 +74,10 @@ namespace VVVV.Nodes.Devices
 		IDiffSpread<float> FScreenTabMindDistance;
 		
 		//settings
-		[Input("Reset", IsBang = true)]
+		[Input("Reset", IsBang = true, IsSingle=true)]
 		IDiffSpread<bool> FResetIn;
 
-        [Input("Enable")]
+        [Input("Enable", DefaultBoolean=true, IsSingle=true)]
         IDiffSpread<bool> FEnabelIn;
 
         [Output("Frame")]
@@ -85,6 +85,24 @@ namespace VVVV.Nodes.Devices
 
         [Output("Gestures")]
         ISpread<GestureList> FGestureOut;
+
+        [Output("Count", Visibility = PinVisibility.OnlyInspector)]
+        ISpread<int> FCountOut;
+
+        [Output("Focus", Visibility=PinVisibility.OnlyInspector)]
+        ISpread<bool> FFocusOut;
+
+        [Output("Timestamp")]
+        ISpread<double> FTimestampOut;
+
+        [Output("fps")]
+        ISpread<float> FFpsOut;
+
+        [Output("FrameId")]
+        ISpread<double> FFrameIdOut;
+
+        [Output("Connected")]
+        ISpread<bool> FConnectedOut;
 
 
         
@@ -98,21 +116,12 @@ namespace VVVV.Nodes.Devices
 		public LeapNode()
 		{
 			FLeapController = new Controller();
-			FLeapController.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
+			FLeapController.SetPolicyFlags(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
 		}
 
 		//called when data for any output pin is requested
 		public void Evaluate(int SpreadMax)
-		{
-//			if(FEnableGestures.IsChanged)
-//			{
-//				foreach (var gestureType in (Gesture.GestureType[])Enum.GetValues(typeof(Gesture.GestureType)))
-//				{
-//					if(gestureType != Gesture.GestureType.TYPEINVALID)
-//						FLeapController.EnableGesture(gestureType, FEnableGestures[0]);
-//				}
-//			}
-			
+		{	
 			if(FResetIn[0])
 			{
 				FLeapController.Dispose();
@@ -120,17 +129,30 @@ namespace VVVV.Nodes.Devices
 				FLeapController.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
 			}
 			
-			ConfigureGestures();
-			
-			var frame = FLeapController.Frame();
-			
-			if(FLeapController.IsConnected && frame.IsValid)
-			{
-				//gestures
-				FGestureOut[0] = FLastFrame != null ? frame.Gestures(FLastFrame) : frame.Gestures();               
-                FFrameOut[0] = frame;
-				FLastFrame = frame;
-			}
+            if(SpreadUtils.AnyChanged(FEnableCircleGesture,FCircleMinArc,FCircleMinRadius,FEnableKeyTabGesture,FKeyTabHistorySeconds,FKeyTabMindDistance,FKeyTabMindDownVelo,FEnableScreenTabGesture,FScreenTabHistorySeconds,FScreenTabMindDistance,FScreenTabMindForwardVelo,FEnableSwipeGesture,FSwipeMinLength,FSwipeMinVelocity))
+			    ConfigureGestures();
+
+            if (FEnabelIn[0])
+            {
+                var frame = FLeapController.Frame();
+                
+                if (FLeapController.IsConnected)
+                {
+                    FCountOut[0] = FLeapController.Devices.Count;
+                    FFocusOut[0] = FLeapController.HasFocus;
+                    FTimestampOut[0] = (double)frame.Timestamp;
+                    FFpsOut[0] = frame.CurrentFramesPerSecond;
+                    FFrameIdOut[0] = (double)frame.Id;
+
+                    if (frame.IsValid)
+                    {
+                        //gestures
+                        FGestureOut[0] = FLastFrame != null ? frame.Gestures(FLastFrame) : frame.Gestures();
+                        FFrameOut[0] = FLastFrame = frame;
+                    }
+                }
+            }
+            FConnectedOut[0] = FLeapController.IsConnected;
 		}
 		
 		void ConfigureGestures()

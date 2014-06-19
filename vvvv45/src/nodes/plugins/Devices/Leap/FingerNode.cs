@@ -26,8 +26,11 @@ namespace VVVV.Nodes.Devices
     {
         #region fields & pins
 #pragma warning disable 0649
-        [Input("Hands")]
-        IDiffSpread<HandList> FHandsListIn;
+        [Input("Finger")]
+        IDiffSpread<FingerList> FFingerListIn;
+
+        [Output("Bone")]
+        ISpread<Bone> FBoneOut;
 
         [Output("Finger Position")]
         ISpread<Vector3D> FFingerPosOut;
@@ -50,19 +53,15 @@ namespace VVVV.Nodes.Devices
         [Output("Hand Slice", Visibility = PinVisibility.OnlyInspector)]
         ISpread<int> FHandSliceOut;
 
-
+        List<Bone> Bones = new List<Bone>();
 #pragma warning restore
 
         #endregion fields & pins
 
         public void Evaluate(int SpreadMax)
         {
-            if (FHandsListIn.IsChanged)
+            if (FFingerListIn.IsChanged)
             {
-                var hands = FHandsListIn[0];
-
-                SpreadMax = hands.Count;
-
                 FFingerPosOut.SliceCount = 0;
                 FFingerDirOut.SliceCount = 0;
                 FFingerVelOut.SliceCount = 0;
@@ -70,22 +69,31 @@ namespace VVVV.Nodes.Devices
                 FFingerSizeOut.SliceCount = 0;
                 FFingerIDOut.SliceCount = 0;
                 FHandSliceOut.SliceCount = 0;
+                Bones.Clear();
 
-                for (int i = 0; i < SpreadMax; i++)
+                for (int i = 0; i < FFingerListIn.SliceCount; i++)
                 {
-
-                    var pointables = hands[i].Pointables;
-                    
-                    for (int j = 0; j < pointables.Count; j++)
+                    for (int j = 0; j < FFingerListIn[i].Count; j++)
                     {
-                        var pointable = pointables[j];
-                        FFingerPosOut.Add(pointable.TipPosition.ToVector3DPos());
-                        FFingerDirOut.Add(pointable.Direction.ToVector3DDir());
-                        FFingerVelOut.Add(pointable.TipVelocity.ToVector3DPos());
-                        FFingerIsToolOut.Add(pointable.IsTool);
-                        FFingerSizeOut.Add(new Vector2D(pointable.Width * 0.001, pointable.Length * 0.001));
-                        FFingerIDOut.Add(pointable.Id);
-                        FHandSliceOut.Add(i);
+                        var Finger = FFingerListIn[i][j];
+                        
+                        if (Finger.IsValid)
+                        {
+                            FFingerPosOut.Add(Finger.TipPosition.ToVector3DPos());
+                            FFingerDirOut.Add(Finger.Direction.ToVector3DDir());
+                            FFingerVelOut.Add(Finger.TipVelocity.ToVector3DPos());
+                            FFingerIsToolOut.Add(Finger.IsTool);
+                            FFingerSizeOut.Add(new Vector2D(Finger.Width * 0.001, Finger.Length * 0.001));
+                            FFingerIDOut.Add(Finger.Id);
+                            FHandSliceOut.Add(i);
+                            
+                            foreach (Bone.BoneType boneType in (Bone.BoneType[])Enum.GetValues(typeof(Bone.BoneType)))
+                            {
+                                Bones.Add(Finger.Bone(boneType));
+                            }
+
+                            FBoneOut.AssignFrom(Bones);
+                        }
                     }
                 }
             }

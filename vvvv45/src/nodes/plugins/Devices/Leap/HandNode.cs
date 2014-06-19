@@ -29,8 +29,8 @@ namespace VVVV.Nodes.Devices
         [Input("Frame")]
         IDiffSpread<Frame> FFrameIn;
 
-        [Output("Hands")]
-        ISpread<HandList> FHandListOut;
+        [Output("Finger")]
+        ISpread<FingerList> FFingerListOut;
 
         [Output("Hand Position")]
         ISpread<Vector3D> FHandPosOut;
@@ -41,6 +41,15 @@ namespace VVVV.Nodes.Devices
         [Output("Hand Normal")]
         ISpread<Vector3D> FHandNormOut;
 
+        [Output("Hand Width")]
+        ISpread<float> FHandWidthOut;
+
+        [Output("Pintch")]
+        ISpread<float> FPintchOut;
+
+        [Output("Confidence")]
+        ISpread<float> FCondfidenceOut;
+
         [Output("Hand Ball Center", Visibility = PinVisibility.OnlyInspector)]
         ISpread<Vector3D> FHandBallCentOut;
 
@@ -49,6 +58,12 @@ namespace VVVV.Nodes.Devices
 
         [Output("Hand Velocity", Visibility = PinVisibility.OnlyInspector)]
         ISpread<Vector3D> FHandVelOut;
+
+        [Output("Hand Name", Visibility = PinVisibility.OnlyInspector)]
+        ISpread<string> FHandNameOut;
+
+        [Output("Duration", Visibility = PinVisibility.OnlyInspector)]
+        ISpread<float> FDurationOut;
 
         [Output("Hand ID")]
         ISpread<int> FHandIDOut;
@@ -73,13 +88,19 @@ namespace VVVV.Nodes.Devices
                 FHandBallCentOut.SliceCount = SpreadMax;
                 FHandBallRadOut.SliceCount = SpreadMax;
                 FHandIDOut.SliceCount = SpreadMax;
+                FCondfidenceOut.SliceCount = SpreadMax;
+                FHandNameOut.SliceCount = SpreadMax;
+                FHandWidthOut.SliceCount = SpreadMax;
+                FPintchOut.SliceCount = SpreadMax;
+                FDurationOut.SliceCount = SpreadMax;
+                FFingerListOut.SliceCount = SpreadMax;
+
 
                 for (int i = 0; i < SpreadMax; i++)
                 {
                     var hand = hands[i];
-                    var bone = hands[i].Fingers[i].Bone(Bone.BoneType.TYPE_DISTAL);
-
-                    if (hand != null)
+                    
+                    if (hand != null && hand.IsValid)
                     {
                         FHandPosOut[i] = hand.PalmPosition.ToVector3DPos();
                         FHandDirOut[i] = hand.Direction.ToVector3DDir();
@@ -88,10 +109,15 @@ namespace VVVV.Nodes.Devices
                         FHandBallRadOut[i] = hand.SphereRadius * 0.001;
                         FHandVelOut[i] = hand.PalmVelocity.ToVector3DPos();
                         FHandIDOut[i] = hand.Id;
+                        FCondfidenceOut[i] = hand.Confidence;
+                        FHandNameOut[i] = hand.IsLeft ? "Left hand" : "Right hand";
+                        FHandWidthOut[i] = hand.PalmWidth;
+                        FPintchOut[i] = hand.PinchStrength;
+                        FDurationOut[i] = hand.TimeVisible;
+
+                        FFingerListOut[i] = hand.Fingers;
                     }
                 }
-
-                FHandListOut[0] = hands;
             }
         }
     }

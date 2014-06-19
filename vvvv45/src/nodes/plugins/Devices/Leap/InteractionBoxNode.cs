@@ -29,6 +29,19 @@ namespace VVVV.Nodes.Devices
         [Input("Frame")]
         IDiffSpread<Frame> FFrameIn;
 
+        [Output("Center")]
+        ISpread<Vector3D> FCenterOut;
+
+        [Output("Width")]
+        ISpread<double> FWidthOut;
+
+        [Output("Height")]
+        ISpread<double> FHeightOut;
+
+        [Output("Depth")]
+        ISpread<double> FDepthOut;
+
+
 
 #pragma warning restore
 
@@ -38,7 +51,17 @@ namespace VVVV.Nodes.Devices
         {
             if (FFrameIn.IsChanged)
             {
-                var InteractionBox = FFrameIn[0].InteractionBox;
+                if (FFrameIn[0] != null)
+                {
+                    var InteractionBox = FFrameIn[0].InteractionBox;
+                    if (InteractionBox.IsValid)
+                    {
+                        FCenterOut[0] = InteractionBox.Center.ToVector3DPos();
+                        FWidthOut[0] = InteractionBox.Width * 0.001;
+                        FHeightOut[0] = InteractionBox.Height * 0.001;
+                        FDepthOut[0] = InteractionBox.Depth * 0.001;
+                    }
+                }
             }
         }
     }

@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoneNode.cs" />
+    <Compile Include="InteractionBoxNode.cs" />
     <Compile Include="FingerNode.cs" />
     <Compile Include="GestureNode.cs" />
     <Compile Include="HandNode.cs" />
