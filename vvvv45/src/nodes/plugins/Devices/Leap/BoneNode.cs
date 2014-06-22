@@ -32,6 +32,21 @@ namespace VVVV.Nodes.Devices
         [Output("Name")]
         ISpread<string> FNameOut;
 
+        [Output("Size")]
+        ISpread<Vector2D> FSizeOut;
+
+        [Output("Position")]
+        ISpread<Vector3D> FPostionOut;
+
+        [Output("Direction")]
+        ISpread<Vector3D> FDirectionOut;
+
+        [Output("Previous Joint")]
+        ISpread<Vector3D> FPrevJointOut;
+
+        [Output("Next Joint")]
+        ISpread<Vector3D> FNextJointOut;
+
 
 
 #pragma warning restore
@@ -42,11 +57,22 @@ namespace VVVV.Nodes.Devices
         {
             if (FBoneListIn.IsChanged)
             {
-                FNameOut.SliceCount = SpreadMax;
+                FNameOut.SliceCount = 0;
+                FSizeOut.SliceCount = 0;
+                FPostionOut.SliceCount = 0;
+                FDirectionOut.SliceCount = 0;
+                FPrevJointOut.SliceCount = 0;
+                FNextJointOut.SliceCount = 0;
 
                 for (int i = 0; i < FBoneListIn.SliceCount; i++)
                 {
-                    FNameOut[i] = FBoneListIn[i].Type.ToString();
+                    Bone Bone = FBoneListIn[i];
+                    FNameOut.Add(Bone.Type.ToString());
+                    FSizeOut.Add(new Vector2D(Bone.Width * 0.001, Bone.Length * 0.001));
+                    FPostionOut.Add(Bone.Center.ToVector3DPos());
+                    FDirectionOut.Add(Bone.Direction.ToVector3DDir());
+                    FPrevJointOut.Add(Bone.PrevJoint.ToVector3DPos());
+                    FNextJointOut.Add(Bone.NextJoint.ToVector3DPos());
                 }
             }
         }

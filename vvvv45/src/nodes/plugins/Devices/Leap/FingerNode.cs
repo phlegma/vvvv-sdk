@@ -53,6 +53,13 @@ namespace VVVV.Nodes.Devices
         [Output("Hand Slice", Visibility = PinVisibility.OnlyInspector)]
         ISpread<int> FHandSliceOut;
 
+        [Output("Extended", Visibility = PinVisibility.OnlyInspector)]
+        ISpread<bool> FExtendedOut;
+
+        [Output("Name", Visibility = PinVisibility.OnlyInspector)]
+        ISpread<string> FNameOut;
+
+
         List<Bone> Bones = new List<Bone>();
 #pragma warning restore
 
@@ -62,6 +69,7 @@ namespace VVVV.Nodes.Devices
         {
             if (FFingerListIn.IsChanged)
             {
+                               
                 FFingerPosOut.SliceCount = 0;
                 FFingerDirOut.SliceCount = 0;
                 FFingerVelOut.SliceCount = 0;
@@ -69,6 +77,8 @@ namespace VVVV.Nodes.Devices
                 FFingerSizeOut.SliceCount = 0;
                 FFingerIDOut.SliceCount = 0;
                 FHandSliceOut.SliceCount = 0;
+                FExtendedOut.SliceCount = 0;
+                FNameOut.SliceCount = 0;
                 Bones.Clear();
 
                 for (int i = 0; i < FFingerListIn.SliceCount; i++)
@@ -86,16 +96,20 @@ namespace VVVV.Nodes.Devices
                             FFingerSizeOut.Add(new Vector2D(Finger.Width * 0.001, Finger.Length * 0.001));
                             FFingerIDOut.Add(Finger.Id);
                             FHandSliceOut.Add(i);
+                            FExtendedOut.Add(Finger.IsExtended);
+                            FNameOut.Add(Finger.Type().ToString());
                             
                             foreach (Bone.BoneType boneType in (Bone.BoneType[])Enum.GetValues(typeof(Bone.BoneType)))
                             {
-                                Bones.Add(Finger.Bone(boneType));
+                                Bone Bone = Finger.Bone(boneType);
+                                if(Bone.IsValid)
+                                    Bones.Add(Bone);
                             }
-
-                            FBoneOut.AssignFrom(Bones);
                         }
                     }
                 }
+
+                FBoneOut.AssignFrom(Bones);
             }
         }
     }
