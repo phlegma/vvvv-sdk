@@ -18,7 +18,7 @@ namespace VVVV.Nodes.Devices
     #region PluginInfo
     [PluginInfo(Name = "Hand",
     Category = "Leap",
-    Help = "Returns the tracking data of the Leap device",
+    Help = "Returns the hand data of the Leap device",
     Tags = "tracking, hand, finger",
     AutoEvaluate = true)]
     #endregion PluginInfo
@@ -26,8 +26,8 @@ namespace VVVV.Nodes.Devices
     {
         #region fields & pins
         #pragma warning disable 0649
-        [Input("Frame")]
-        IDiffSpread<Frame> FFrameIn;
+        [Input("Hand")]
+        IDiffSpread<HandList> FHandIn;
 
         [Output("Finger")]
         ISpread<FingerList> FFingerListOut;
@@ -75,47 +75,49 @@ namespace VVVV.Nodes.Devices
 
         public void Evaluate(int SpreadMax)
         {
-            if (FFrameIn.IsChanged)
+            if (FHandIn.IsChanged)
             {
-                var hands = FFrameIn[0].Hands;
-
-                SpreadMax = hands.Count;
-
-                FHandPosOut.SliceCount = SpreadMax;
-                FHandDirOut.SliceCount = SpreadMax;
-                FHandVelOut.SliceCount = SpreadMax;
-                FHandNormOut.SliceCount = SpreadMax;
-                FHandBallCentOut.SliceCount = SpreadMax;
-                FHandBallRadOut.SliceCount = SpreadMax;
-                FHandIDOut.SliceCount = SpreadMax;
-                FCondfidenceOut.SliceCount = SpreadMax;
-                FHandNameOut.SliceCount = SpreadMax;
-                FHandWidthOut.SliceCount = SpreadMax;
-                FPintchOut.SliceCount = SpreadMax;
-                FDurationOut.SliceCount = SpreadMax;
-                FFingerListOut.SliceCount = SpreadMax;
-
-
-                for (int i = 0; i < SpreadMax; i++)
+                if (FHandIn[0] != null)
                 {
-                    var hand = hands[i];
-                    
-                    if (hand != null && hand.IsValid)
-                    {
-                        FHandPosOut[i] = hand.PalmPosition.ToVector3DPos();
-                        FHandDirOut[i] = hand.Direction.ToVector3DDir();
-                        FHandNormOut[i] = hand.PalmNormal.ToVector3DDir();
-                        FHandBallCentOut[i] = hand.SphereCenter.ToVector3DPos();
-                        FHandBallRadOut[i] = hand.SphereRadius * 0.001;
-                        FHandVelOut[i] = hand.PalmVelocity.ToVector3DPos();
-                        FHandIDOut[i] = hand.Id;
-                        FCondfidenceOut[i] = hand.Confidence;
-                        FHandNameOut[i] = hand.IsLeft ? "Left hand" : "Right hand";
-                        FHandWidthOut[i] = hand.PalmWidth;
-                        FPintchOut[i] = hand.PinchStrength;
-                        FDurationOut[i] = hand.TimeVisible;
+                    SpreadMax = FHandIn[0].Count;
 
-                        FFingerListOut[i] = hand.Fingers;
+                    FHandPosOut.SliceCount = SpreadMax;
+                    FHandDirOut.SliceCount = SpreadMax;
+                    FHandVelOut.SliceCount = SpreadMax;
+                    FHandNormOut.SliceCount = SpreadMax;
+                    FHandBallCentOut.SliceCount = SpreadMax;
+                    FHandBallRadOut.SliceCount = SpreadMax;
+                    FHandIDOut.SliceCount = SpreadMax;
+                    FCondfidenceOut.SliceCount = SpreadMax;
+                    FHandNameOut.SliceCount = SpreadMax;
+                    FHandWidthOut.SliceCount = SpreadMax;
+                    FPintchOut.SliceCount = SpreadMax;
+                    FDurationOut.SliceCount = SpreadMax;
+                    FFingerListOut.SliceCount = SpreadMax;
+
+
+
+                    for (int i = 0; i < SpreadMax; i++)
+                    {
+                        var hand = FHandIn[0][i];
+
+                        if (hand != null && hand.IsValid)
+                        {
+                            FHandPosOut[i] = hand.PalmPosition.ToVector3DPos();
+                            FHandDirOut[i] = hand.Direction.ToVector3DDir();
+                            FHandNormOut[i] = hand.PalmNormal.ToVector3DDir();
+                            FHandBallCentOut[i] = hand.SphereCenter.ToVector3DPos();
+                            FHandBallRadOut[i] = hand.SphereRadius * 0.001;
+                            FHandVelOut[i] = hand.PalmVelocity.ToVector3DPos();
+                            FHandIDOut[i] = hand.Id;
+                            FCondfidenceOut[i] = hand.Confidence;
+                            FHandNameOut[i] = hand.IsLeft ? "Left hand" : "Right hand";
+                            FHandWidthOut[i] = hand.PalmWidth;
+                            FPintchOut[i] = hand.PinchStrength;
+                            FDurationOut[i] = hand.TimeVisible;
+
+                            FFingerListOut[i] = hand.Fingers;
+                        }
                     }
                 }
             }

@@ -18,7 +18,7 @@ namespace VVVV.Nodes.Devices
     #region PluginInfo
     [PluginInfo(Name = "Bone",
     Category = "Leap",
-    Help = "Returns the tracking data of the Leap device",
+    Help = "Returns the bone data of the Leap device",
     Tags = "tracking, hand, finger",
     AutoEvaluate = true)]
     #endregion PluginInfo
@@ -64,15 +64,19 @@ namespace VVVV.Nodes.Devices
                 FPrevJointOut.SliceCount = 0;
                 FNextJointOut.SliceCount = 0;
 
-                for (int i = 0; i < FBoneListIn.SliceCount; i++)
+                if (FBoneListIn != null)
                 {
-                    Bone Bone = FBoneListIn[i];
-                    FNameOut.Add(Bone.Type.ToString());
-                    FSizeOut.Add(new Vector2D(Bone.Width * 0.001, Bone.Length * 0.001));
-                    FPostionOut.Add(Bone.Center.ToVector3DPos());
-                    FDirectionOut.Add(Bone.Direction.ToVector3DDir());
-                    FPrevJointOut.Add(Bone.PrevJoint.ToVector3DPos());
-                    FNextJointOut.Add(Bone.NextJoint.ToVector3DPos());
+
+                    for (int i = 0; i < FBoneListIn.SliceCount; i++)
+                    {
+                        Bone Bone = FBoneListIn[i];
+                        FNameOut.Add(Bone.Type.ToString());
+                        FSizeOut.Add(new Vector2D(Bone.Width * 0.001, Bone.Length * 0.001));
+                        FPostionOut.Add(Bone.Center.ToVector3DPos());
+                        FDirectionOut.Add(Bone.Direction.ToVector3DDir());
+                        FPrevJointOut.Add(Bone.PrevJoint.ToVector3DPos());
+                        FNextJointOut.Add(Bone.NextJoint.ToVector3DPos());
+                    }
                 }
             }
         }

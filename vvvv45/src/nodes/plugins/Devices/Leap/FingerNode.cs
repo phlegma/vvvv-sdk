@@ -18,7 +18,7 @@ namespace VVVV.Nodes.Devices
     #region PluginInfo
     [PluginInfo(Name = "Finger",
     Category = "Leap",
-    Help = "Returns the tracking data of the Leap device",
+    Help = "Returns the finger data of the Leap device",
     Tags = "tracking, hand, finger",
     AutoEvaluate = true)]
     #endregion PluginInfo
@@ -69,7 +69,7 @@ namespace VVVV.Nodes.Devices
         {
             if (FFingerListIn.IsChanged)
             {
-                               
+
                 FFingerPosOut.SliceCount = 0;
                 FFingerDirOut.SliceCount = 0;
                 FFingerVelOut.SliceCount = 0;
@@ -81,30 +81,37 @@ namespace VVVV.Nodes.Devices
                 FNameOut.SliceCount = 0;
                 Bones.Clear();
 
-                for (int i = 0; i < FFingerListIn.SliceCount; i++)
+                if (FFingerListIn != null)
                 {
-                    for (int j = 0; j < FFingerListIn[i].Count; j++)
+                    for (int i = 0; i < FFingerListIn.SliceCount; i++)
                     {
-                        var Finger = FFingerListIn[i][j];
-                        
-                        if (Finger.IsValid)
+                        if (FFingerListIn[i] != null)
                         {
-                            FFingerPosOut.Add(Finger.TipPosition.ToVector3DPos());
-                            FFingerDirOut.Add(Finger.Direction.ToVector3DDir());
-                            FFingerVelOut.Add(Finger.TipVelocity.ToVector3DPos());
-                            FFingerIsToolOut.Add(Finger.IsTool);
-                            FFingerSizeOut.Add(new Vector2D(Finger.Width * 0.001, Finger.Length * 0.001));
-                            FFingerIDOut.Add(Finger.Id);
-                            FHandSliceOut.Add(i);
-                            FExtendedOut.Add(Finger.IsExtended);
-                            FNameOut.Add(Finger.Type().ToString());
-                            
-                            foreach (Bone.BoneType boneType in (Bone.BoneType[])Enum.GetValues(typeof(Bone.BoneType)))
+                            for (int j = 0; j < FFingerListIn[i].Count; j++)
                             {
-                                Bone Bone = Finger.Bone(boneType);
-                                if(Bone.IsValid)
-                                    Bones.Add(Bone);
+                                var Finger = FFingerListIn[i][j];
+
+                                if (Finger.IsValid)
+                                {
+                                    FFingerPosOut.Add(Finger.TipPosition.ToVector3DPos());
+                                    FFingerDirOut.Add(Finger.Direction.ToVector3DDir());
+                                    FFingerVelOut.Add(Finger.TipVelocity.ToVector3DPos());
+                                    FFingerIsToolOut.Add(Finger.IsTool);
+                                    FFingerSizeOut.Add(new Vector2D(Finger.Width * 0.001, Finger.Length * 0.001));
+                                    FFingerIDOut.Add(Finger.Id);
+                                    FHandSliceOut.Add(i);
+                                    FExtendedOut.Add(Finger.IsExtended);
+                                    FNameOut.Add(Finger.Type().ToString());
+
+                                    foreach (Bone.BoneType boneType in (Bone.BoneType[])Enum.GetValues(typeof(Bone.BoneType)))
+                                    {
+                                        Bone Bone = Finger.Bone(boneType);
+                                        if (Bone.IsValid)
+                                            Bones.Add(Bone);
+                                    }
+                                }
                             }
+
                         }
                     }
                 }

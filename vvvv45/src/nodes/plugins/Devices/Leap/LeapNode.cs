@@ -18,7 +18,7 @@ namespace VVVV.Nodes.Devices
 	#region PluginInfo
 	[PluginInfo(Name = "Leap",
 	Category = "Devices", 
-	Help = "Returns the tracking data of the Leap device",
+	Help = "Returns the device data of the Leap device",
 	Tags = "tracking, hand, finger",
 	AutoEvaluate = true)]
 	#endregion PluginInfo
@@ -80,11 +80,14 @@ namespace VVVV.Nodes.Devices
         [Input("Enable", DefaultBoolean=true, IsSingle=true)]
         IDiffSpread<bool> FEnabelIn;
 
-        [Output("Frame")]
-        ISpread<Frame> FFrameOut;
+        [Output("Hand")]
+        ISpread<HandList> FHandOut;
 
         [Output("Gestures")]
         ISpread<GestureList> FGestureOut;
+
+        [Output("Interaktion Box")]
+        ISpread<InteractionBox> FInteraktionBoxOut;
 
         [Output("Count", Visibility = PinVisibility.OnlyInspector)]
         ISpread<int> FCountOut;
@@ -148,7 +151,9 @@ namespace VVVV.Nodes.Devices
                     {
                         //gestures
                         FGestureOut[0] = FLastFrame != null ? frame.Gestures(FLastFrame) : frame.Gestures();
-                        FFrameOut[0] = FLastFrame = frame;
+                        FHandOut[0] = frame.Hands;
+                        FInteraktionBoxOut[0] = frame.InteractionBox;
+                        FLastFrame = frame;
                     }
                 }
             }

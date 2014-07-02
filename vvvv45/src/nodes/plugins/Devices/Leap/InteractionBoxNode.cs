@@ -26,8 +26,8 @@ namespace VVVV.Nodes.Devices
     {
         #region fields & pins
 #pragma warning disable 0649
-        [Input("Frame")]
-        IDiffSpread<Frame> FFrameIn;
+        [Input("Interaktion Box")]
+        IDiffSpread<InteractionBox> FInteraktionBoxIn;
 
         [Output("Center")]
         ISpread<Vector3D> FCenterOut;
@@ -49,11 +49,11 @@ namespace VVVV.Nodes.Devices
 
         public void Evaluate(int SpreadMax)
         {
-            if (FFrameIn.IsChanged)
+            if (FInteraktionBoxIn.IsChanged)
             {
-                if (FFrameIn[0] != null)
+                if (FInteraktionBoxIn[0] != null)
                 {
-                    var InteractionBox = FFrameIn[0].InteractionBox;
+                    var InteractionBox = FInteraktionBoxIn[0];
                     if (InteractionBox.IsValid)
                     {
                         FCenterOut[0] = InteractionBox.Center.ToVector3DPos();
