@@ -1,7 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-# SharpDevelop 4.4
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{704B6D46-8445-4315-8128-F331143A113E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hosting", "..\..\src\core\Hosting\Hosting.csproj", "{F9A754A6-EEA5-4761-9446-C2AAF9CF8B31}"
@@ -987,6 +986,7 @@ Global
 		{53CFF0FE-29AB-482B-B7BC-F60A733D6A45}.Release|x86.ActiveCfg = Release|x86
 		{53CFF0FE-29AB-482B-B7BC-F60A733D6A45}.Release|x86.Build.0 = Release|x86
 		{820B958A-9071-4539-8BCF-5C36F39579BE}.Debug|x64.ActiveCfg = Debug|x64
+		{820B958A-9071-4539-8BCF-5C36F39579BE}.Debug|x64.Build.0 = Debug|x64
 		{820B958A-9071-4539-8BCF-5C36F39579BE}.Debug|x86.ActiveCfg = Debug|x86
 		{820B958A-9071-4539-8BCF-5C36F39579BE}.Debug|x86.Build.0 = Debug|x86
 		{820B958A-9071-4539-8BCF-5C36F39579BE}.Release|x64.ActiveCfg = Release|x64

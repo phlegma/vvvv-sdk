@@ -112,10 +112,10 @@
     <Compile Include="String\URLCoding.cs" />
     <Compile Include="SVG\SVGGeomNodes.cs" />
     <Compile Include="SVG\SVGGroupNode.cs" />
-    <Compile Include="SVG\SvgRendererNode.cs" />
-    <Compile Include="SVG\SVGTextureNode.cs">
+    <Compile Include="SVG\SvgRendererNode.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="SVG\SVGTextureNode.cs" />
     <Compile Include="System\DeviceComparer.cs" />
     <Compile Include="System\DesktopDeviceInputNode.cs" />
     <Compile Include="System\SendMouseNode.cs" />
@@ -310,9 +310,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="vvvv\Architecture" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="..\..\..\..\packages\VVVV.SlimDX.1.0.1\build\net40\VVVV.SlimDX.targets" Condition="Exists('..\..\..\..\packages\VVVV.SlimDX.1.0.1\build\net40\VVVV.SlimDX.targets')" />
 </Project>
